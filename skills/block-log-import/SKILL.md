@@ -15,7 +15,7 @@ description: >
 Turn raw workout logs into Block sessions:
 **parse → resolve every exercise name → write → report**.
 
-Requires the `block-mcp` tools (`list_exercises`, `get_workout_session`,
+Requires the `regal-mcp` tools (`list_exercises`, `get_workout_session`,
 `put_session_log`). If they are not connected, stop and say so — this skill
 cannot import anything without them.
 
