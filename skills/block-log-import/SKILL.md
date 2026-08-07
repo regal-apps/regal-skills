@@ -41,11 +41,9 @@ Block stores **RIR** (reps in reserve). Convert whatever the source uses:
 
 - `RIR n` → `n`
 - `RPE n` (Strong, Hevy) → `10 − n`, floored at 0 (RPE 8 → RIR 2)
-- A range (`2-3 RIR`, `RPE 7-8`) → take the **harder-sounding bound's**
-  conservative reading, i.e. the **higher RIR** (`2-3 RIR` → 2 is the lower
-  RIR; use it only if the source means "at least 2 left"). When ambiguous,
-  prefer the lower RIR — assuming more effort keeps later progression
-  estimates conservative.
+- A range → take the **lower RIR**, i.e. the harder reading (`2-3 RIR` → 2;
+  `RPE 7-8` → RPE 8 → RIR 2). Assuming the set was closer to failure keeps
+  later progression estimates conservative.
 - Nothing recorded → `null`. Never invent effort.
 
 ### Common notations
