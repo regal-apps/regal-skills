@@ -16,17 +16,36 @@ Turn raw workout logs into Block sessions:
 **parse → resolve every exercise name → write → report**.
 
 Requires the `regal-mcp` tools (`list_exercises`, `get_workout_session`,
-`put_session_log`). If they are not connected, stop and say so — this skill
-cannot import anything without them.
+`put_session_log`, `set_session_state`, `merge_session_into_plan`). If they
+are not connected, stop and say so — this skill cannot import anything
+without them.
 
 Work one training day at a time, oldest first. Never batch several dates into
 one session.
 
-## 0. Never import the same day twice
+## 0. Look at the date before you write
 
-Before writing any date, call `get_workout_session` for it. If a session with
-the same exercises already exists, skip that date and report it. Imports must
-be safely re-runnable.
+Call `get_workout_session` for the date first. What comes back decides how the
+day is written:
+
+- **A session with the same exercises already exists** → skip the date and
+  report it. Imports must be safely re-runnable.
+- **A session for that day is still `planned`** — it was scheduled ahead and
+  carries a prescription but no log → write **into it**. Pass its `session_id`
+  to `put_session_log` instead of a `date`, then `set_session_state` it to
+  `finished`. In this mode `put_session_log` takes no `date`, `title` or
+  `finished`; the planned session already has them.
+- **Nothing for that date** → create the session as in step 3.
+
+Never create a session beside a plan for the same training. The plan would
+hang as `planned` forever while the log sat next to it, and the day would be
+counted twice in adherence — one workout, two sessions.
+
+If such a pair already exists, whether from an earlier import or from an
+ad-hoc training logged in the app, fold it with `merge_session_into_plan`.
+The plan is what survives: it owns the prescription, the slot and its time
+window, so only the log and the real timestamps move onto it and the
+duplicate is deleted.
 
 ## 1. Parse the raw log
 
@@ -106,7 +125,9 @@ Hard rules:
 
 ## 3. Write the session
 
-One `put_session_log` call per training day:
+One `put_session_log` call per training day. Writing into a planned session
+instead is step 0's second case — there you pass `session_id` and none of the
+first three fields below.
 
 - `date` — the training date (`YYYY-MM-DD`).
 - `title` — the session name from the log ("Upper A", "Push"), if any.
@@ -125,6 +146,9 @@ One compact line per session:
   created: Hack Squat
   skipped: core circuit (time-based)
 ```
+
+When a day was written into a planned session rather than a new one, say so on
+its line — it tells the user the plan and the log are now one thing.
 
 Then a closing summary: sessions written, aliases taught, custom exercises
 created, everything skipped and why, plus any commentary from the logs worth
