@@ -108,6 +108,18 @@ For each name, in order:
    `exercise_id`; Block creates a custom entry. Afterwards read the
    `near_matches` in the response: if it reveals an existing exercise you
    should have matched, tell the user rather than leaving a duplicate.
+   A custom entry created this way starts **untagged** — `muscle_group` and
+   `equipment` are `other` — and an untagged exercise is invisible to every
+   volume view. List each one in the report so the user tags it in Block's
+   exercise picker.
+
+`muscle_group` and `equipment` in `list_exercises` are English enum values
+(`chest`, `lats`, `upper_back`, `lower_back`, `traps`, `front_delts`,
+`side_delts`, `rear_delts`, `biceps`, `triceps`, `forearms`, `quads`,
+`hamstrings`, `glutes`, `calves`, `abs`, `other`; `barbell`, `dumbbell`,
+`machine`, `cable`, `bodyweight`, `other`). Use them to tell variants apart
+when a name alone is ambiguous — a `machine` "Rudern" is not the `barbell`
+one.
 
 Hard rules:
 
@@ -142,8 +154,8 @@ One compact line per session:
 
 ```
 ✓ 2026-07-23 Lower A — 6 exercises, 16 working sets
-  aliased: "Hyper Extension" → Hyperextension
-  created: Hack Squat
+  aliased: "Hyper Extension" → Hyperextensions
+  created: Hack Squat (untagged — set muscle and equipment in Block)
   skipped: core circuit (time-based)
 ```
 
